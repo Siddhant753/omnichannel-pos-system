@@ -1,0 +1,114 @@
+Table users {
+  id ObjectId [pk]
+  first_name varchar
+  last_name varchar
+  email varchar [unique]
+  password_hash varchar
+  role enum('admin','manager','cashier')
+  is_active boolean
+  created_at timestamp
+}
+
+Table stores {
+  id ObjectId [pk]
+  name varchar
+  city varchar
+  state varchar
+  country varchar
+  created_at timestamp
+}
+
+Table user_stores {
+  id ObjectId [pk]
+  user_id ObjectId [ref: > users.id]
+  store_id ObjectId [ref: > stores.id]
+  assigned_at timestamp
+}
+
+Table products {
+  id ObjectId [pk]
+  name varchar
+  description text
+  category varchar
+  created_at timestamp
+}
+
+Table product_variants {
+  id ObjectId [pk]
+  product_id ObjectId [ref: > products.id]
+  sku varchar [unique]
+  price decimal
+  color varchar
+  size varchar
+  created_at timestamp
+}
+
+Table inventory {
+  id ObjectId [pk]
+  store_id ObjectId [ref: > stores.id]
+  variant_id ObjectId [ref: > product_variants.id]
+  available_quantity int
+  reserved_quantity int
+  updated_at timestamp
+}
+
+Table customers {
+  id ObjectId [pk]
+  first_name varchar
+  last_name varchar
+  email varchar [unique]
+  password_hash varchar
+  phone varchar
+  created_at timestamp
+}
+
+Table orders {
+  id ObjectId [pk]
+  store_id ObjectId
+  customer_id ObjectId
+  cashier_id ObjectId
+
+  subtotal decimal
+  tax decimal
+  discount decimal
+  total_amount decimal
+
+  payment_method enum('cash','card','wallet')
+  status enum('pending','completed','cancelled','refunded')
+
+  created_at timestamp
+}
+
+Table order_items {
+  id ObjectId [pk]
+  order_id ObjectId [ref: > orders.id]
+  variant_id ObjectId [ref: > product_variants.id]
+  quantity int
+  unit_price decimal
+  subtotal decimal
+}
+
+Table inventory_ledger {
+  id ObjectId [pk]
+  store_id ObjectId [ref: > stores.id]
+  variant_id ObjectId [ref: > product_variants.id]
+
+  change_type enum(
+    'SALE',
+    'REFUND',
+    'MANUAL_ADJUSTMENT',
+    'TRANSFER_OUT',
+    'TRANSFER_IN',
+    'PURCHASE_RECEIPT'
+  )
+
+  quantity_change int
+  previous_quantity int
+  new_quantity int
+
+  reference_id ObjectId
+  reference_type enum('ORDER', 'TRANSFER', 'ADJUSTMENT')
+
+  performed_by ObjectId [ref: > users.id]
+  created_at timestamp
+}
