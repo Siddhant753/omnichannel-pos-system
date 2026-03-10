@@ -1,0 +1,13 @@
+- Backend setup done
+- database connection logic add
+    -currently use local mongodb database for api testing
+    -also ensure to install node modules and mongodb compass if possible
+- basic database schema added
+    - user, store, userStore, userToken, products schemas added.
+- authentication middleware added to protect specific api endpoints.
+- authentication logic adding started
+    - signup logic added
+    - signup using verification link logic added
+    - divided logic into separate files and modules
+- add user email verification logic
+    - verifies token for email verification
