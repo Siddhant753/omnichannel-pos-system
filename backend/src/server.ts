@@ -1,15 +1,15 @@
-import app from "./app.js";
-import dotenv from "dotenv";
-import dbConnect from "./config/dbConnect.js";
+import 'dotenv/config'
+import app from './app.js'
+import dbConnect from './config/dbConnect.js'
 
-dotenv.config();
+const PORT = process.env.PORT || 5000
 
-const startServer = async () => {
-    await dbConnect();
+async function startServer() {
+  await dbConnect()
 
-    app.listen(process.env.PORT, () => {
-        console.log(`Server running on port ${process.env.PORT}`);
-    });
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`)
+  })
 }
 
-startServer();
+startServer()
