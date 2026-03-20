@@ -1,4 +1,5 @@
 import { useState } from "react";
+import {useNavigate, Link} from 'react-router-dom'
 import type { SignupFormData } from "../../types/auth.types";
 import {signupUser} from '../../services/auth.service'
 
@@ -52,6 +53,8 @@ export default function SignupForm() {
     // To prevent duplicate submissions
     const [isSubmitting, setIsSubmitting] = useState(false)
 
+    const navigate = useNavigate()
+
     const handleSubmit = async(e: React.FormEvent) => {
         e.preventDefault()
         if (isSubmitting) return // Return if the form is still submitting
@@ -68,6 +71,8 @@ export default function SignupForm() {
                 role: formData.role
             })
             alert("Account created successfully")
+            console.log("Redirecting to login...")
+            navigate("/login")
         }
         catch (error: any){
             alert(error.response?.data?.message || "Signup Failed")
@@ -147,6 +152,11 @@ export default function SignupForm() {
                 </div>
 
                 <button type="submit" disabled={isSubmitting} className="w-full bg-orange-400 text-white py-2 rounded-md hover:bg-orange-500 hover:cursor-pointer">{isSubmitting ? "Creating account...":"Sign Up"}</button>
+
+                <div className="text-center text-sm mt-4">
+                    <span>Already Registered? </span>
+                    <Link to="/login" className="text-orange-500 hover:underline font-medium">Login</Link>
+                </div>
             </form>
         </div>
     )
