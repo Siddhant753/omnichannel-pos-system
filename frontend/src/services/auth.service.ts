@@ -12,3 +12,13 @@ export const signupUser = async (data: {
     )
     return response.data
 }
+
+export const loginUser = async (data: {
+    email: string
+    password: string
+}) => {
+    const response = await axios.post(
+        "http://localhost:5000/api/auth/login", data
+    )
+    return response.data
+}
