@@ -11,7 +11,7 @@ export default function Navbar() {
     }
 
     return (
-        <div className="flex justify-between items-center p-4 bg-gray-800 text-white">
+        <div className="flex justify-between items-center p-4 bg-orange-500 text-white">
             <h1 className="font-bold">POS System</h1>
             <div className="space-x-4">
                 {!user ? (
@@ -21,6 +21,19 @@ export default function Navbar() {
                 ) : (
                     <>
                         <Link to="/dashboard">Dashboard</Link>
+
+                        {user.role === "admin" && (
+                        <Link to="/admin">Admin Panel</Link>
+                        )}
+
+                        {user.role === "manager" && (
+                        <Link to="/admin">Manager Panel</Link>
+                        )}
+
+                        {user.role === "cashier" && (
+                        <Link to="/pos">POS</Link>
+                        )}
+
                         <button onClick={handleLogout}>Logout</button>
                     </>
                 )

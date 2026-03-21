@@ -70,9 +70,8 @@ export default function SignupForm() {
                 password: formData.password,
                 role: formData.role
             })
-            alert("Account created successfully")
             console.log("Redirecting to login...")
-            navigate("/login")
+            navigate("/")
         }
         catch (error: any){
             alert(error.response?.data?.message || "Signup Failed")
