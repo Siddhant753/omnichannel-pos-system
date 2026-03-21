@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { loginUser } from "../../services/auth.service"
 import {Link, useNavigate} from 'react-router-dom'
+import { useAuth } from "../../context/AuthContext"
 
 export default function LoginForm() {
     const [formData, setFormData] = useState({ email: "", password: "" })
@@ -14,6 +15,7 @@ export default function LoginForm() {
     
     const navigate = useNavigate()
 
+    const {login} = useAuth()
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (isSubmitting) return
@@ -22,7 +24,7 @@ export default function LoginForm() {
         try{
             const res = await loginUser(formData)
             console.log("Login Success:", res)
-            localStorage.setItem("user", JSON.stringify(res.user))
+            login(res.user)
             navigate("/dashboard")
         }
         catch (error: any){
