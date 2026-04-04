@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { createUserService, findUserByEmailService, verifyUserTokenService, generateTokenService } from "../services/auth.service.js";
 import UserModel from "../models/user.model.js";
 import UserTokenModel from "../models/userToken.model.js";
+import redis from "../config/redisConfig.js";
 
 interface JwtPayload {
     id: string;
@@ -158,6 +159,12 @@ export const refreshTokenController = async (req: Request, res: Response) => {
         return res.status(401).json({ message: "Invalid or expired refresh token" });
     }
 };
+
+export const storeRefreshTokenController = async (userId: string, refreshToken: string) => {
+    const key = `refreshToken:${userId}`;
+
+    await redis.set(key, refreshToken, 'EX', 60 * 60 * 24 * 30);
+}
 
 export const logoutController = async (req: Request, res: Response) => {
     const refreshToken = req.cookies.refreshToken
