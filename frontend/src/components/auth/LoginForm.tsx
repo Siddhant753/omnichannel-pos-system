@@ -24,6 +24,9 @@ export default function LoginForm() {
         try{
             const res = await loginUser(formData)
             console.log("Login Success:", res)
+            // store token
+            localStorage.setItem("accessToken", res.accessToken)
+            // store user
             login(res.user)
             navigate("/dashboard")
         }

@@ -1,23 +1,61 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { createOrder } from "../services/order.service"
+import { getProducts } from "../services/product.service"
 
 type Product = {
-  id: number
+  id: string
   name: string
   price: number
 }
 
 export default function POS() {
 
-  const products: Product[] = [
-    { id: 1, name: "Shirt", price: 500 },
-    { id: 2, name: "Pants", price: 800 },
-    { id: 3, name: "Shoes", price: 1200 },
-  ]
+  const [products, setProducts] = useState<Product[]>([])
+
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await getProducts()
+
+        console.log("API DATA:", data)
+
+        const normalized = data.products.map((product: any) => {
+          const productVariants = data.variants.filter(
+            (v: any) => v.productId === product._id
+          )
+
+          return {
+            id: product._id,
+            name: product.name,
+            category: product.category,
+            price: productVariants[0]?.price || 0
+          }
+        })
+
+        console.log("NORMALIZED:", normalized)
+
+        setProducts(normalized)
+
+      } catch (error) {
+        console.error("API Failed:", error)
+      }
+    }
+
+    fetchProducts()
+  }, [])
+
+  // Search
+  const [search, setsearch] = useState("")
+  const filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(search.toLocaleLowerCase())
+  )
+
+
 
   // cart Logic
   type CartItem = {
-    id: number
+    id: string
     name: string
     price: number
     quantity: number
@@ -47,7 +85,7 @@ export default function POS() {
   )
 
   // Checkout Handler
-  const handleCheckout = async() => {
+  const handleCheckout = async () => {
     /*try{
       const items = cart.map(item => ({
         productId: item.id,
@@ -79,24 +117,34 @@ export default function POS() {
       <div className="w-2/3 p-4 border-r">
         <h2 className="text-xl font-bold mb-4">Products</h2>
 
+        {/* Search Function */}
         <input
           type="text"
           placeholder="Search product..."
           className="w-full border px-3 py-2 mb-4"
+          value={search}
+          onChange={(e) => setsearch(e.target.value)}
         />
 
-        <div className="grid grid-cols-3 gap-4">
-          {products.map(product => (
-            <div
-              key={product.id}
-              onClick={() => addToCart(product)}
-              className="border p-4 cursor-pointer hover:bg-gray-100"
-            >
-              <h3>{product.name}</h3>
-              <p>₹{product.price}</p>
-            </div>
-          ))}
-        </div>
+
+
+        {filteredProducts.length === 0 ? (
+          <p className="text-gray-500">No products available</p>
+        ) : (
+          <div className="grid grid-cols-3 gap-4">
+            {filteredProducts.map(product => (
+              <div
+                key={product.id}
+                onClick={() => addToCart(product)}
+                className="border p-4 cursor-pointer hover:bg-gray-100"
+              >
+                <h3>{product.name}</h3>
+                <p>₹{product.price}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
       </div>
 
       {/* RIGHT */}
@@ -150,8 +198,8 @@ export default function POS() {
         </div>
 
         <button
-        onClick={handleCheckout}
-        className="mt-4 w-full bg-green-500 text-white py-2">
+          onClick={handleCheckout}
+          className="mt-4 w-full bg-green-500 text-white py-2">
           Checkout
         </button>
       </div>

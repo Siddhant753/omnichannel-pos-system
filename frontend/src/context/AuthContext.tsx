@@ -1,4 +1,4 @@
-import {createContext, useState, useEffect, useContext} from 'react'
+import { createContext, useState, useEffect, useContext } from 'react'
 
 type User = {
     email: string
@@ -14,14 +14,14 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
-export const AuthProvider = ({children}: {children: React.ReactNode}) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(true)
 
     // Run once when the app loads. Checks local storage to presist login after refresh.
     useEffect(() => {
         const storedUser = localStorage.getItem("user")
-        if (storedUser){
+        if (storedUser) {
             setUser(JSON.parse(storedUser))
         }
         setLoading(false)
@@ -36,6 +36,7 @@ export const AuthProvider = ({children}: {children: React.ReactNode}) => {
     // Logout function - Removes user from local storage.
     const logout = () => {
         localStorage.removeItem("user")
+        localStorage.removeItem("accessToken")
         setUser(null)
     }
 

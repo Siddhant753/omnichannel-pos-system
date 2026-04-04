@@ -1,8 +1,8 @@
-import axios from "axios";
+import api from "./api";
 
 export const createOrder = async (items:{productId: number, quantity: number}[]) =>{
-    const response = await axios.post(
-        "http://localhost:5000/api/auth/orders", {items}
+    const response = await api.post(
+        "/api/orders", {items}
     )
     return response.data
 }
