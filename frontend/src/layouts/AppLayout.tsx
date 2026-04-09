@@ -3,6 +3,7 @@ import Sidebar from "../components/Sidebar";
 import Navbar from "../components/Navbar";
 import Dashboard from "../pages/Dashboard";
 import POS from "../pages/POS";
+import ProductPage from "../products/productPage";
 
 export default function AppLayout() {
   const [active, setActive] = useState("Dashboard");
@@ -22,11 +23,12 @@ export default function AppLayout() {
         {/* Page Content */}
         <div className="p-6 overflow-y-auto">
           {active === "Dashboard" && <Dashboard />}
-          {/* {active === "Users" && <UsersPage />}
-          {active === "Products" && <ProductsPage />}
-          {active === "Orders" && <OrdersPage />}
+          {/* {active === "Users" && <UsersPage />} */}
+          {active === "Products" && <ProductPage />}
+          {/* {active === "Orders" && <OrdersPage />}
           {active === "Inventory" && <InventoryPage />}
-          {active === "Settings" && <SettingsPage />} */}
+          {active === "Settings" && <SettingsPage />}
+          {active === "POS" && <POSPage />} */}
           {active === "POS" && <POS />}
         </div>
       </div>

@@ -27,7 +27,7 @@ export default function Sidebar({ active, setActive }: Props) {
             <button
               key={item.name}
               onClick={() => setActive(item.name)}
-              className={`flex items-center gap-3 w-full p-3 rounded-xl transition ${
+              className={`flex items-center gap-3 w-full p-3 rounded-xl transition hover:cursor-pointer ${
                 active === item.name
                   ? "bg-black text-white"
                   : "hover:bg-gray-200"
