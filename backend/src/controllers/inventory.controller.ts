@@ -2,7 +2,8 @@ import type { Request, Response } from "express";
 import mongoose from "mongoose";
 import InventoryModel from "../models/inventory.model";
 import InventoryLedgerModel from "../models/inventoryLedger.model";
-import redis from "../config/redisConfig";
+import redis from "../config/redis";
+import { sendBarcodeEvent } from "../services/kafka/barcode.producer";
 
 export const createInventory = async (req: Request, res: Response) => {
     try {
@@ -224,4 +225,20 @@ export const getInventoryLedger = async (req: Request, res: Response) => {
 }
 
 // barcode scanning endpoint - use of kafka service for integration with barcode scanning devices/system
+export const barcodeScan = async (req: Request, res: Response) => {
+    try {
+        const { barcode } = req.body;
 
+        if (!barcode) {
+            return res.status(400).json({
+                message: "barcode required"
+            });
+        }
+
+        await sendBarcodeEvent({ barcode });
+        res.json({ message: "Barcode event sent" });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+}

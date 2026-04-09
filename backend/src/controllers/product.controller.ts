@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import ProductsModel from "../models/products.model";
 import ProductVariantsModel from "../models/productVariants.model";
+import { generateBarcode, generateSKU } from "../services/product.service";
 
 export const createProduct = async (req: Request, res: Response) => {
     try {
@@ -13,17 +14,32 @@ export const createProduct = async (req: Request, res: Response) => {
         const product = await ProductsModel.create({ name, description, category });
         
         // Assuming ProductVariantsModel is defined and imported correctly
-        const createdVariants = await ProductVariantsModel.insertMany(
-            variants.map((v) => ({
-                productId: product._id,
-                sku: v.sku,
-                price: v.price,
-                barcode: v.barcode,
-                createdAt: new Date()
-            }))
+        const Productvariants = await Promise.all(
+            variants.map(async (v: any) => {
+
+                if (!v.attributeValues || typeof v.attributeValues !== "object") {
+                    throw new Error("attributeValues is required for each variant");
+                }
+
+                const attributeValues = new Map<string, string>(
+                    Object.entries(v.attributeValues)
+                );
+
+                const sku = generateSKU(name, attributeValues);
+                const barcode = generateBarcode();
+
+                return ProductVariantsModel.create({
+                    productId: product._id,
+                    attributeValues,
+                    sku,
+                    price: v.price,
+                    barcode,
+                    createdAt: new Date()
+                });
+            })
         );
 
-        return res.status(201).json({ product, variants: createdVariants });
+        return res.status(201).json({ product, variants: Productvariants });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ message: "Internal Server Error" });

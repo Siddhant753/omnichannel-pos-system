@@ -1,7 +1,12 @@
 import { Router } from 'express';
 import authMiddleware from '../middleware/auth.middleware';
 import { allowRoles } from '../middleware/rbac.middleware';
-import { createStoreController, getStoresController, updateStoreController, deleteStoreController } from '../controllers/store.controller';
+import { 
+    createStoreController,
+    getStoresController,
+    updateStoreController,
+    deleteStoreController
+} from '../controllers/store.controller';
 
 const storeRouter = Router();
 

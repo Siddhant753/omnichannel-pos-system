@@ -14,7 +14,10 @@ jest.mock("../middleware/auth.middleware", () => {
 
 // Mock Auth Service
 jest.mock("../services/auth.service", () => ({
-    verifyUserTokenService: jest.fn()
+    verifyUserTokenService: jest.fn(),
+    findUserByEmailService: jest.fn(),
+    createUserService: jest.fn(),
+    generateTokenService: jest.fn()
 }));
 
 // Mock User Model
@@ -22,38 +25,38 @@ jest.mock("../models/user.model", () => ({
     __esModule: true,
     default: {
         findOne: jest.fn(),
-        create: jest.fn()
+        create: jest.fn(),
+        findById: jest.fn()
     }
 }));
 
 // Mock User Token Model
-jest.mock("../models/userToken.model", () => {
-    return {
-        __esModule: true,
-        default: {
-            create: jest.fn().mockResolvedValue({}),
-            findOne: jest.fn().mockResolvedValue({}),
-            deleteOne: jest.fn().mockResolvedValue({})
-        }
-    };
-});
+jest.mock("../models/userToken.model", () => ({
+    __esModule: true,
+    default: {
+        create: jest.fn(),
+        findOne: jest.fn(),
+        deleteOne: jest.fn()
+    }
+}));
 
 // Mock Bcrypt
 jest.mock("bcryptjs", () => ({
     compare: jest.fn().mockResolvedValue(true)
 }));
 
-// Mock JsonWebToken
+// Mock JWT
 jest.mock("jsonwebtoken", () => ({
     sign: jest.fn().mockReturnValue("fakeToken"),
-    verify: jest.fn().mockReturnValue({ id: "userId" })
+    verify: jest.fn()
 }));
 
 import request from "supertest";
 import app from "../app";
+import jwt from "jsonwebtoken";
 import UserModel from "../models/user.model";
 import UserTokenModel from "../models/userToken.model";
-import { verifyUserTokenService } from "../services/auth.service";
+import { verifyUserTokenService, findUserByEmailService, createUserService, generateTokenService } from "../services/auth.service";
 
 describe("Auth Controller", () => {
     const user = {
@@ -66,15 +69,16 @@ describe("Auth Controller", () => {
 
     beforeAll(() => {
         process.env.FRONTEND_URL = "http://localhost:5173";
+        process.env.SECRET_ACCESS_TOKEN_KEY = "testsecret";
+        process.env.SECRET_REFRESH_TOKEN_KEY = "refreshsecret";
     });
-    
+
     describe("Signup", () => {
         it("should create user", async () => {
-
-            (UserModel.findOne as jest.Mock).mockResolvedValue(null);
-            (UserModel.create as jest.Mock).mockResolvedValue({
-                _id: "userId",
-                ...user
+            (findUserByEmailService as jest.Mock).mockResolvedValue(null);
+            (createUserService as jest.Mock).mockResolvedValue({
+                user: { _id: "userId" },
+                rawToken: "token123"
             });
 
             const res = await request(app).post("/api/auth/signup").send(user);
@@ -84,20 +88,38 @@ describe("Auth Controller", () => {
     });
 
     describe("Verify Token", () => {
-        it("should verify token", async () => {
-            const res = await request(app).get("/api/auth/verify/fakeToken");
+        it("should verify token successfully", async () => {
+            (verifyUserTokenService as jest.Mock).mockResolvedValue({
+                _id: "userId",
+                email: user.email
+            });
 
+            const res = await request(app).post("/api/auth/verify-email/testToken");
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty("user");
+        });
+
+        it("should fail if token invalid", async () => {
+            (verifyUserTokenService as jest.Mock).mockResolvedValue(null);
+
+            const res = await request(app).post("/api/auth/verify-email/testToken");
+
+            expect(res.status).toBe(400);
         });
     });
 
     describe("Login", () => {
         it("should login user", async () => {
-
-            (UserModel.findOne as jest.Mock).mockResolvedValue({
+            (findUserByEmailService as jest.Mock).mockResolvedValue({
                 _id: "userId",
                 hashPassword: "hashed",
-                isActive: true,
-                ...user
+                isActive: true
+            });
+
+            (generateTokenService as jest.Mock).mockResolvedValue({
+                accessToken: "accessToken",
+                refreshToken: "refreshToken"
             });
 
             const res = await request(app).post("/api/auth/login").send({
@@ -108,6 +130,53 @@ describe("Auth Controller", () => {
             token = res.body.accessToken || "fakeToken";
 
             expect(res.status).toBe(200);
+        });
+    });
+
+    describe("Verify Access Token", () => {
+        it("should verify access token", async () => {
+            (jwt.verify as jest.Mock).mockReturnValue({ id: "userId" });
+
+            const res = await request(app).get("/api/auth/verify-token").set("authorization", "Bearer validToken");
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty("user");
+        });
+
+        it("should fail if token missing", async () => {
+            const res = await request(app).get("/api/auth/verify-token");
+
+            expect(res.status).toBe(401);
+        });
+    });
+  
+    describe("Refresh Token", () => {
+        it("should refresh token successfully", async () => {
+            (jwt.verify as jest.Mock).mockReturnValue({ id: "userId" });
+
+            (UserTokenModel.findOne as jest.Mock).mockResolvedValue({
+                deleteOne: jest.fn().mockResolvedValue({})
+            });
+
+            (UserModel.findById as jest.Mock).mockResolvedValue({
+                _id: "userId"
+            });
+
+            (generateTokenService as jest.Mock).mockResolvedValue({
+                accessToken: "newAccessToken",
+                refreshToken: "newRefreshToken"
+            });
+
+            const res = await request(app).post("/api/auth/refresh-token").set("Cookie", "refreshToken=fakeRefreshToken");
+
+            expect(res.status).toBe(200);
+            expect(res.body).toHaveProperty("accessToken");
+        });
+
+        it("should fail if refresh token missing", async () => {
+            const res = await request(app).post("/api/auth/refresh-token");
+
+            expect(res.status).toBe(401);
         });
     });
 

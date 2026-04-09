@@ -6,7 +6,7 @@ const redis = new Redis({
 
     maxRetriesPerRequest: 3,
     retryStrategy: (times) => {
-        return Math.min(times * 50, 2000); // exponential backoff
+        return Math.min(times * 50, 2000);
     },
 });
 

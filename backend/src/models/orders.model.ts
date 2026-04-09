@@ -10,6 +10,7 @@ export interface IOrders extends Document {
     discount: number;
     totalAmount: number;
     paymentMethod: "cash" | "card" | "online";
+    invoiceUrl: string,
     status: "pending" | "completed" | "cancelled" | "refunded";
     createdAt: Date;
 }
@@ -23,6 +24,7 @@ const ordersSchema = new Schema<IOrders>({
     discount: { type: Number, required: true },
     totalAmount: { type: Number, required: true },
     paymentMethod: { type: String, enum: ["cash", "card", "online"], required: true },
+    invoiceUrl: { type: String, required: true },
     status: { type: String, enum: ["pending", "completed", "cancelled", "refunded"], default: "pending" },
     createdAt: { type: Date, default: Date.now }
 });

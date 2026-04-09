@@ -1,4 +1,4 @@
-import { createProduct, getProducts } from "../controllers/product.controller";
+import { createProduct, getProducts, getProductsByBarcode } from "../controllers/product.controller";
 import ProductsModel from "../models/products.model";
 import ProductVariantsModel from "../models/productVariants.model";
 
@@ -13,7 +13,7 @@ describe("Product Controller", () => {
                     name: "Shirt",
                     description: "Cotton Shirt",
                     category: "Clothing",
-                    variants: [{ sku: "SKU1", price: 100, barcode: "123" }]
+                    variants: [{ sku: "SKU1", attributeValues: { size: "M", color: "Red" }, price: 100, barcode: "123" }]
                 }
             } as any;
 
@@ -27,14 +27,14 @@ describe("Product Controller", () => {
                 ...req.body
             });
 
-            (ProductVariantsModel.insertMany as jest.Mock).mockResolvedValue([
+            (ProductVariantsModel.create as jest.Mock).mockResolvedValue([
                 { _id: "variantId", productId: "productId" }
             ]);
 
             await createProduct(req, res);
 
             expect(ProductsModel.create).toHaveBeenCalled();
-            expect(ProductVariantsModel.insertMany).toHaveBeenCalled();
+            expect(ProductVariantsModel.create).toHaveBeenCalled();
             expect(res.status).toHaveBeenCalledWith(201);
         });
     });
@@ -72,6 +72,33 @@ describe("Product Controller", () => {
             expect(ProductsModel.find).toHaveBeenCalled();
             expect(ProductVariantsModel.find).toHaveBeenCalled();
             expect(res.status).toHaveBeenCalledWith(200);
+        });
+    });
+
+    describe("GetProductsByBarcode", () => {
+        it("should return product variant by barcode", async () => {
+            const req = { params: { barcode: "123" } } as any;
+            const res = {
+                status: jest.fn().mockReturnThis(),
+                json: jest.fn()
+            } as any;
+
+            const mockVariant = {
+                _id: "1",
+                barcode: "123",
+                productId: { name: "Test Product" }
+            };
+
+            (ProductVariantsModel.findOne as jest.Mock).mockReturnValue({
+                populate: jest.fn().mockReturnValue({
+                    lean: jest.fn().mockResolvedValue(mockVariant),
+                }),
+            });
+
+            await getProductsByBarcode(req, res);
+            expect(ProductVariantsModel.findOne).toHaveBeenCalledWith({ barcode: "123" });
+            expect(res.status).toHaveBeenCalledWith(200);
+            expect(res.json).toHaveBeenCalledWith({ variant: mockVariant });
         });
     });
 });

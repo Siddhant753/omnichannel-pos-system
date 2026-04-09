@@ -1,7 +1,11 @@
 import { Router } from 'express';
 import authMiddleware from '../middleware/auth.middleware';
 import { allowRoles } from '../middleware/rbac.middleware';
-import { createProduct, getProducts, getProductsByBarcode } from '../controllers/product.controller';
+import { 
+    createProduct,
+    getProducts,
+    getProductsByBarcode
+} from '../controllers/product.controller';
 
 const productRouter = Router();
 
