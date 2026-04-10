@@ -34,7 +34,6 @@ export default function Products() {
     const fetchProducts = async () => {
         const data = await getProducts();
 
-        // 🔥 MERGE PRODUCTS + VARIANTS
         const merged = data.products.map((p: any) => ({
         ...p,
         variants: data.variants.filter((v: any) => v.productId === p._id)
@@ -78,8 +77,6 @@ export default function Products() {
 
     return (
         <div className="p-8 pt-20">
-
-            {/* HEADER */}
             <div className="flex justify-between mb-4">
                 <h2 className="text-xl font-bold">Products</h2>
 
@@ -91,30 +88,36 @@ export default function Products() {
                 </button>
             </div>
 
-            {/* PRODUCTS */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {products.map((p) => (
-                    <div key={p._id} className="border p-4 rounded shadow">
-                        <h3 className="font-bold">{p.name}</h3>
-                        <p className="text-sm text-gray-500">{p.category}</p>
-
-                        {/* VARIANTS */}
-                        <div className="mt-2 text-sm">
-                            {p.variants.map((v) => (
-                                <div key={v._id} className="flex justify-between">
-                                    <span>{v.attributeValues ? Object.values(
-                                            v.attributeValues instanceof Map
-                                                ? Object.fromEntries(v.attributeValues)
-                                                : v.attributeValues
-                                        ).join(" / ")
-                                        : "N/A"}
-                                    </span>
-                                    <span>₹{v.price}</span>
-                                </div>
-                            ))}
-                        </div>
+                {products.length === 0 ? (
+                    <div className="col-span-full text-center text-gray-500 py-6">
+                        No products found
                     </div>
-                ))}
+                ) : (
+                    products.map((p) => (
+                        <div key={p._id} className="border p-4 rounded shadow">
+                            <h3 className="font-bold">{p.name}</h3>
+                            <p className="text-sm text-gray-500">{p.category}</p>
+
+                            <div className="mt-2 text-sm">
+                                {p.variants.map((v) => (
+                                    <div key={v._id} className="flex justify-between">
+                                        <span>
+                                            {v.attributeValues
+                                                ? Object.values(
+                                                    v.attributeValues instanceof Map
+                                                        ? Object.fromEntries(v.attributeValues)
+                                                        : v.attributeValues
+                                                ).join(" / ")
+                                                : "N/A"}
+                                        </span>
+                                        <span>₹{v.price}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
 
             {openModal && (

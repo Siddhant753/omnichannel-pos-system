@@ -9,7 +9,7 @@ export interface IUserStores extends Document {
 
 const userStoresSchema = new Schema<IUserStores>({
     userId: { type: mongoose.Types.ObjectId, ref: 'User', required: true },
-    storeId: { type: mongoose.Types.ObjectId, ref: 'Store', required: true },
+    storeId: { type: mongoose.Types.ObjectId, ref: 'Stores', required: true },
     assignedAt: { type: Date, default: Date.now },
 }, { timestamps: true });
 

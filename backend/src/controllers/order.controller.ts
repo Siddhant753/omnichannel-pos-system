@@ -7,7 +7,7 @@ import ProductVariantsModel from "../models/productVariants.model";
 
 export const createOrder = async (req: Request, res: Response) => {
     try {
-        const { storeId, cashierId, customerId, items, paymentMethod, discount = 0, tax = 0 } = req.body;
+        const { storeId, cashierId, customerId, items, paymentMethod, invoiceUrl, discount = 0, tax = 0 } = req.body;
 
         if (!items || items.length === 0) {
             throw new Error("Order items are required");
@@ -29,6 +29,14 @@ export const createOrder = async (req: Request, res: Response) => {
 
             if (!inventory || inventory.stock < item.quantity) {
                 throw new Error("Insufficient stock");
+            }
+
+            if (!cashierId) {
+                throw new Error("cashierId is required");
+            }
+
+            if (!paymentMethod) {
+                throw new Error("paymentMethod is required");
             }
 
             const itemSubtotal = variant.price * item.quantity;
@@ -76,6 +84,7 @@ export const createOrder = async (req: Request, res: Response) => {
             discount,
             totalAmount,
             paymentMethod,
+            invoiceUrl: "",
             status: "completed",
             orderNumber: `ORD-${Date.now()}`
         });
@@ -130,6 +139,7 @@ export const getOrders = async (req: Request, res: Response) => {
         });
 
     } catch (error: any) {
+        console.error("GET ORDERS ERROR:", error);
         return res.status(500).json({ message: error.message });
     }
 };

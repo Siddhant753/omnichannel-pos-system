@@ -21,9 +21,9 @@ const inventoryLedgerSchema = new Schema<IInventoryLedger>({
     quantityChange: { type: Number, required: true },
     oldQuantity: { type: Number, required: true },
     newQuantity: { type: Number, required: true },
-    referenceId: { type: Schema.Types.ObjectId, required: true },
+    referenceId: { type: Schema.Types.ObjectId },
     referenceType: { type: String, enum: ['Order', 'Purchase', 'Refund', 'Adjustment', 'Transfer', 'PurchaseReceipt'], required: true },
-    issuedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    issuedBy: { type: Schema.Types.ObjectId, ref: 'User' },
 }, { timestamps: true });
 
 const InventoryLedgerModel = mongoose.model<IInventoryLedger>('InventoryLedger', inventoryLedgerSchema);

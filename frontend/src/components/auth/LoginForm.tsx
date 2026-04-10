@@ -28,7 +28,7 @@ export default function LoginForm() {
             localStorage.setItem("accessToken", res.accessToken)
             // store user
             login(res.user)
-            navigate("/app")
+            navigate("/dashboard")
         }
         catch (error: any){
             alert(error.response?.data?.message || "Login Failed")

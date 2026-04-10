@@ -103,7 +103,6 @@ export default function Stores() {
                 </div>
             </div>
 
-            {/* TABLE */}
             {loading ? (
                 <p>Loading...</p>
             ) : (
@@ -119,46 +118,56 @@ export default function Stores() {
                                 <th className="px-6 py-2.5 text-left text-sm">Actions</th>
                             </tr>
                         </thead>
-
                         <tbody>
-                            {filteredStores.map((store) => (
-                                <tr key={store._id} className="hover:bg-gray-100">
-                                    <td className="px-6 py-2.5 text-sm font-medium">
-                                        {store.name}
-                                    </td>
-                                    <td className="px-6 py-2.5 text-sm capitalize">
-                                        {store.type}
-                                    </td>
-                                    <td className="px-6 py-2.5 text-sm">
-                                        {store.city}, {store.state}, {store.country}
-                                    </td>
-                                    <td className="px-6 py-2.5 text-sm">
-                                        {store.contactNumber}
-                                    </td>
+                            {filteredStores.length === 0 ? (
+                                <tr>
                                     <td
-                                        className="px-6 py-2.5 text-sm"
-                                        title={store.manager?.email}
+                                        colSpan={6}
+                                        className="px-6 py-4 text-center text-sm text-gray-500"
                                     >
-                                        {store.manager
-                                            ? `${store.manager.fname} ${store.manager.lname}`
-                                            : "N/A"}
-                                    </td>
-                                    <td className="px-6 py-2.5 text-sm flex gap-2">
-                                        <button
-                                            onClick={() => handleEdit(store)}
-                                            className="px-2 py-1 bg-blue-500 text-white rounded text-xs"
-                                        >
-                                            Edit
-                                        </button>
-                                        <button
-                                            onClick={() => handleDelete(store._id)}
-                                            className="px-2 py-1 bg-red-500 text-white rounded text-xs"
-                                        >
-                                            Delete
-                                        </button>
+                                        No stores found
                                     </td>
                                 </tr>
-                            ))}
+                            ) : (
+                                filteredStores.map((store) => (
+                                    <tr key={store._id} className="hover:bg-gray-100">
+                                        <td className="px-6 py-2.5 text-sm font-medium">
+                                            {store.name}
+                                        </td>
+                                        <td className="px-6 py-2.5 text-sm capitalize">
+                                            {store.type}
+                                        </td>
+                                        <td className="px-6 py-2.5 text-sm">
+                                            {store.city}, {store.state}, {store.country}
+                                        </td>
+                                        <td className="px-6 py-2.5 text-sm">
+                                            {store.contactNumber}
+                                        </td>
+                                        <td
+                                            className="px-6 py-2.5 text-sm"
+                                            title={store.manager?.email}
+                                        >
+                                            {store.manager
+                                                ? `${store.manager.fname} ${store.manager.lname}`
+                                                : "N/A"}
+                                        </td>
+                                        <td className="px-6 py-2.5 text-sm flex gap-2">
+                                            <button
+                                                onClick={() => handleEdit(store)}
+                                                className="px-2 py-1 bg-blue-500 text-white rounded text-xs"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(store._id)}
+                                                className="px-2 py-1 bg-red-500 text-white rounded text-xs"
+                                            >
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>
@@ -180,7 +189,6 @@ export default function Stores() {
                             </button>
                         </div>
 
-                        {/* FORM */}
                         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
 
                             <input name="name" defaultValue={editingStore?.name} placeholder="Name" className="border p-2 rounded" />

@@ -1,42 +1,40 @@
-import axios from 'axios'
+import axios from "axios";
 
-export const createOrder = async () => {
-    const response = await axios.post(
-        "http://localhost:5000/api/orders/create-order",
-    )
-    return response.data
-}
+const API = axios.create({
+    baseURL: "http://localhost:5000/api",
+});
+
+API.interceptors.request.use((config) => {
+    const token = localStorage.getItem("accessToken");
+
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+});
+
+export const createOrder = async (data: any) => {
+    const res = await API.post("/orders/create-order", data);
+    return res.data;
+};
+
+export const updateOrder = async (orderId: string, status: string) => {
+    const res = await API.patch(`/orders/order/${orderId}/status`, { status });
+    return res.data;
+};
+
+export const cancelOrder = async (orderId: string) => {
+    const res = await API.patch(`/orders/order/${orderId}/cancel`);
+    return res.data;
+};
+
+export const getOrderById = async (orderId: string) => {
+    const res = await API.get(`/orders/order/${orderId}`);
+    return res.data;
+};
 
 export const getOrders = async () => {
-    const response = await axios.get(
-        `http://localhost:5000/api/orders/get-orders`,
-    )
-    return response.data
-}
-
-export const getOrderById = async (data: {
-    orderId: string
-}) => {
-    const response = await axios.get(
-        `http://localhost:5000/api/orders/get-order/${data.orderId}`,
-    )
-    return response.data
-}
-
-export const updateOrder = async (data: {
-    orderId: string
-}) => {
-    const response = await axios.patch(
-        `http://localhost:5000/api/orders/${data.orderId}/status`, data
-    )
-    return response.data
-}
-
-export const cancelOrder = async (data: {
-    orderId: string
-}) => {
-    const response = await axios.patch(
-        `http://localhost:5000/api/orders/${data.orderId}/cancel`,
-    )
-    return response.data
-}
+    const res = await API.get(`/orders/get-orders`);
+    return res.data;
+};

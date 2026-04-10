@@ -13,6 +13,7 @@ export default function Navbar() {
     const navLinks = [
         { name: "Dashboard", path: "/dashboard", roles: ["admin", "manager", "cashier"] },
         { name: "Stores", path: "/stores", roles: ["admin"] },
+        { name: "POS", path: "/pos", roles: ["admin", "manager", "cashier"] },
         { name: "Products", path: "/products", roles: ["admin", "manager"] },
         { name: "Orders", path: "/orders", roles: ["admin", "manager", "cashier"] },
         { name: "POS", path: "/pos", roles: ["cashier"] },

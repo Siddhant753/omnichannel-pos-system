@@ -16,7 +16,7 @@ export interface IOrders extends Document {
 }
 
 const ordersSchema = new Schema<IOrders>({
-    storeId: { type: mongoose.Types.ObjectId, ref: "Store", required: true },
+    storeId: { type: mongoose.Types.ObjectId, ref: "Stores", required: true },
     cashierId: { type: mongoose.Types.ObjectId, ref: "User", required: true },
     customerId: { type: mongoose.Types.ObjectId, ref: "Customer", required: false },
     subtotal: { type: Number, required: true },
@@ -24,7 +24,7 @@ const ordersSchema = new Schema<IOrders>({
     discount: { type: Number, required: true },
     totalAmount: { type: Number, required: true },
     paymentMethod: { type: String, enum: ["cash", "card", "online"], required: true },
-    invoiceUrl: { type: String, required: true },
+    invoiceUrl: { type: String, default: "" },
     status: { type: String, enum: ["pending", "completed", "cancelled", "refunded"], default: "pending" },
     createdAt: { type: Date, default: Date.now }
 });
