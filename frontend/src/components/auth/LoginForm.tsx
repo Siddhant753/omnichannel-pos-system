@@ -38,8 +38,6 @@ export default function LoginForm() {
         }
     }
 
-
-
     return (
         <div className="bg-amber-100 p-8 rounded-lg shadow-md max-w-md w-full place-content-center">
             <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>

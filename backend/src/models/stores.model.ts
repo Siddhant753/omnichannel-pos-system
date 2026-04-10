@@ -21,7 +21,7 @@ const storesSchema = new Schema<IStores>({
     state: { type: String, required: true },
     country: { type: String, required: true },
     contactNumber: { type: String, required: true },
-    manager: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    manager: { type: Schema.Types.ObjectId, ref: 'User' },
 }, { timestamps: true });
 
 storesSchema.index({ name: 1, address: 1, city: 1 }, { unique: true });
