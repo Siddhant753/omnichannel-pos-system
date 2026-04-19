@@ -19,6 +19,11 @@ export const getStore = async (page = 1, limit = 10) => {
     return res.data;
 };
 
+export const getStoresCount = async () => {
+    const res = await API.get("/store/get-stores-count");
+    return res.data;
+};
+
 export const createStore = async (data: any) => {
     const res = await API.post("/store/create-store", data);
     return res.data;

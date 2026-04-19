@@ -3,11 +3,11 @@ import { s3Client } from "../config/aws";
 
 const s3 = s3Client;
 
-export const uploadToS3 = async (file: any) => {
+export const uploadToS3 = async (fileName: string, fileBuffer: Buffer) => {
     const command = new PutObjectCommand({
         Bucket: process.env.AWS_BUCKET!,
-        Key: `invoices/${Date.now()}.pdf`,
-        Body: file.buffer,
+        Key: fileName,
+        Body: fileBuffer,
         ContentType: "application/pdf",
     });
 

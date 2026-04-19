@@ -1,59 +1,52 @@
-import axios from "axios"
+import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:5000/api"
-})
+    baseURL: "http://localhost:5000/api",
+    withCredentials: true
+});
 
-// Attach token
+// Attach access token
 api.interceptors.request.use((config) => {
-    const token = localStorage.getItem("accessToken")
+    const token = localStorage.getItem("accessToken");
 
     if (token) {
-        config.headers.Authorization = `Bearer ${token}`
+        config.headers.Authorization = `Bearer ${token}`;
     }
 
-    return config
-})
+    return config;
+});
 
-// Handle 401 with refresh logic
+// Handle refresh token
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
-        const originalRequest = error.config
+        const originalRequest = error.config;
 
-        if (
-            error.response?.status === 401 && !originalRequest._retry
-        ) {
-            originalRequest._retry = true
+        if (error.response?.status === 401 && !originalRequest._retry) {
+            originalRequest._retry = true;
 
             try {
-                const refreshToken = localStorage.getItem("refreshToken")
-
                 const res = await axios.post(
                     "http://localhost:5000/api/auth/refresh-token",
-                    { refreshToken }
-                )
+                    {},
+                    { withCredentials: true }
+                );
 
-                const newAccessToken = res.data.accessToken
+                const newAccessToken = res.data.accessToken;
 
-                // Save new token
-                localStorage.setItem("accessToken", newAccessToken)
+                localStorage.setItem("accessToken", newAccessToken);
 
-                // Retry original request
-                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
 
-                return api(originalRequest)
+                return api(originalRequest);
             } catch (refreshError) {
-                // Refresh failed → logout
-                localStorage.removeItem("accessToken")
-                localStorage.removeItem("refreshToken")
-                localStorage.removeItem("user")
-
-                window.location.href = "/"
+                localStorage.clear();
+                window.location.href = "/";
             }
         }
-        return Promise.reject(error)
-    }
-)
 
-export default api
+        return Promise.reject(error);
+    }
+);
+
+export default api;

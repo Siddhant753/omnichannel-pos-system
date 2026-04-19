@@ -19,13 +19,21 @@ export const createProduct = async (data: any) => {
     return res.data;
 };
 
-// GET PRODUCTS
 export const getProducts = async () => {
     const res = await API.get("/product/get-products");
     return res.data;
 };
 
-// GET BY BARCODE (POS)
+export const getProductsCount = async () => {
+    const res = await API.get("/product/get-products-count");
+    return res.data;
+};
+
+export const getVariantsCount = async () => {
+    const res = await API.get("/product/get-product-variants-count");
+    return res.data;
+};
+
 export const getProductByBarcode = async (barcode: string) => {
     const res = await API.get(`/product/get-products/${barcode}`);
     return res.data;

@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import { createUserService, findUserByEmailService, verifyUserTokenService, generateTokenService } from "../services/auth.service";
 import UserModel from "../models/user.model";
 import UserTokenModel from "../models/userToken.model";
+import sendEmail from "../config/sendEmail";
 
 interface JwtPayload {
     id: string;
@@ -24,8 +25,12 @@ export const signUpController = async (req: Request, res: Response) => {
 
         const verificationURL = `${process.env.FRONTEND_URL}/verify-email?token=${rawToken}`;
 
-        // Create Send Email file in configs and import it here to send the email
-        console.log(`Verification URL: ${verificationURL}`); // temporary log for verification URL.
+        await sendEmail({
+            sendTo: email,
+            subject: "Account Verification",
+            html: `<p>Click <a href="${verificationURL}">here</a> to verify your account.</p>`
+        })
+
         return res.status(201).json({ message: "User created successfully" });
     } catch (error) {
         res.status(500).json({ message: "Internal Server Error" });
@@ -45,9 +50,13 @@ export const verifyTokenController = async (req: Request, res: Response) => {
             return res.status(400).json({ message: "Invalid or expired token" });
         }
 
-        // Here also add send Email component for sending welcoming email.
+        await sendEmail({
+            sendTo: user.email,
+            subject: "Account Verified",
+            html: `<p>Hi ${user.fname},</p>
+                <p>Your account has been verified successfully.</p>`
+        })
 
-        console.log("User verified successfully"); // temporary log in place of sending email.
         return res.status(200).json({ message: "Token verified successfully", user });
     } catch(error) {
         return res.status(500).json({ message: "Internal Server Error" });

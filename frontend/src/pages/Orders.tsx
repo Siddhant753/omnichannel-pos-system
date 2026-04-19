@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import {
     getOrders,
     getOrderById,
-    updateOrder,
-    cancelOrder
 } from "../services/order.service";
 
 export default function Orders() {
@@ -39,17 +37,6 @@ export default function Orders() {
         const res = await getOrderById(id);
         setSelectedOrder(res.order);
         setOrderItems(res.items || []);
-    };
-
-    const handleStatusChange = async (id: string, status: string) => {
-        await updateOrder(id, status);
-        fetchOrders();
-    };
-
-    const handleCancel = async (id: string) => {
-        if (!confirm("Cancel this order?")) return;
-        await cancelOrder(id);
-        fetchOrders();
     };
 
     const getStatusColor = (status: string) => {
@@ -137,26 +124,6 @@ export default function Orders() {
                                                 className="px-2 py-1 bg-blue-500 text-white rounded text-xs"
                                             >
                                                 View
-                                            </button>
-
-                                            <select
-                                                value={order.status}
-                                                onChange={(e) =>
-                                                    handleStatusChange(order._id, e.target.value)
-                                                }
-                                                className="border text-xs p-1 rounded"
-                                            >
-                                                <option value="pending">Pending</option>
-                                                <option value="completed">Completed</option>
-                                                <option value="cancelled">Cancelled</option>
-                                                <option value="refunded">Refunded</option>
-                                            </select>
-
-                                            <button
-                                                onClick={() => handleCancel(order._id)}
-                                                className="px-2 py-1 bg-red-500 text-white rounded text-xs"
-                                            >
-                                                Cancel
                                             </button>
                                         </td>
                                     </tr>
