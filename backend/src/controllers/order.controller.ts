@@ -4,6 +4,7 @@ import OrderItemsModel from "../models/orderItems.model";
 import InventoryModel from "../models/inventory.model";
 import InventoryLedgerModel from "../models/inventoryLedger.model";
 import ProductVariantsModel from "../models/productVariants.model";
+import { uploadInvoice } from "../services/payment.service";
 
 export const createOrder = async (req: Request, res: Response) => {
     try {
@@ -91,6 +92,10 @@ export const createOrder = async (req: Request, res: Response) => {
 
         const savedOrder = await orderDoc.save();
 
+        uploadInvoice({
+            orderId: savedOrder._id.toString(),
+            storeId: storeId
+        }).catch(err => console.error("Invoice error:", err));
         const orderId = savedOrder._id;
         const itemsWithOrder = orderItemsData.map(item => ({
             ...item,

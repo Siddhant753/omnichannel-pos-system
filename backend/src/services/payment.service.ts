@@ -21,7 +21,7 @@ export const uploadInvoice = async (data: { orderId: string; storeId: string }) 
     }
     const pdfBuffer = Buffer.from(`Invoice for order ${order._id}`);
     const fileName = `invoices/${order._id}.pdf` as string;
-    const url = await uploadToS3(fileName);
+    const url = await uploadToS3(fileName, pdfBuffer);
 
     await OrdersModel.findOneAndUpdate({ _id: data.orderId }, { invoiceUrl: url });
 };

@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { createStore, getStore, deleteStore } from "../services/store.service";
+import StoreIcon from '@mui/icons-material/Store';
+import AddIcon from '@mui/icons-material/Add';
 
 type Store = {
     _id: string;
@@ -10,11 +12,6 @@ type Store = {
     state: string;
     country: string;
     contactNumber: string;
-    manager?: {
-        fname: string;
-        lname: string;
-        email: string;
-    };
 };
 
 export default function Stores() {
@@ -80,7 +77,10 @@ export default function Stores() {
     return (
         <div className="p-8 pt-20">
             <div className="flex flex-col sm:flex-row justify-between gap-3 mb-4">
-                <h2 className="text-xl font-bold">Stores</h2>
+                <div className="flex items-center gap-2">
+                    <h2 className="text-xl font-bold">Stores</h2>
+                    <StoreIcon />
+                </div>
 
                 <div className="flex gap-2">
                     <input
@@ -98,7 +98,7 @@ export default function Stores() {
                         }}
                         className="bg-green-500 text-white md:text-sm px-4 py-2 rounded"
                     >
-                        + Create Store
+                        <AddIcon fontSize="small" /> Create Store
                     </button>
                 </div>
             </div>
@@ -114,7 +114,6 @@ export default function Stores() {
                                 <th className="px-6 py-2.5 text-left text-sm">Type</th>
                                 <th className="px-6 py-2.5 text-left text-sm">Location</th>
                                 <th className="px-6 py-2.5 text-left text-sm">Contact</th>
-                                <th className="px-6 py-2.5 text-left text-sm">Manager</th>
                                 <th className="px-6 py-2.5 text-left text-sm">Actions</th>
                             </tr>
                         </thead>
@@ -122,7 +121,7 @@ export default function Stores() {
                             {filteredStores.length === 0 ? (
                                 <tr>
                                     <td
-                                        colSpan={6}
+                                        colSpan={5}
                                         className="px-6 py-4 text-center text-sm text-gray-500"
                                     >
                                         No stores found
@@ -142,14 +141,6 @@ export default function Stores() {
                                         </td>
                                         <td className="px-6 py-2.5 text-sm">
                                             {store.contactNumber}
-                                        </td>
-                                        <td
-                                            className="px-6 py-2.5 text-sm"
-                                            title={store.manager?.email}
-                                        >
-                                            {store.manager
-                                                ? `${store.manager.fname} ${store.manager.lname}`
-                                                : "N/A"}
                                         </td>
                                         <td className="px-6 py-2.5 text-sm flex gap-2">
                                             <button

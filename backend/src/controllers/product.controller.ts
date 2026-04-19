@@ -61,6 +61,26 @@ export const getProducts = async (req: Request, res: Response) => {
     }
 }
 
+export const getProductsCountController = async (req: Request, res: Response) => {
+    try {
+        const totalProducts = await ProductsModel.countDocuments();
+        return res.status(200).json({ totalProducts });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
+export const getProductVariantsCountController = async (req: Request, res: Response) => {
+    try {
+        const totalVariants = await ProductVariantsModel.countDocuments();
+        return res.status(200).json({ totalVariants });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
 export const getProductsByBarcode = async (req: Request, res: Response) => {
     try {
         const barcode = req.params.barcode as string;

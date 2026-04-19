@@ -11,7 +11,7 @@ export interface IOrderItems extends Document {
 
 const orderItemsSchema = new Schema<IOrderItems>({
     orderId: { type: mongoose.Types.ObjectId, ref: "Orders", required: true },
-    variantId: { type: mongoose.Types.ObjectId, ref: "ProductVariant", required: true },
+    variantId: { type: mongoose.Types.ObjectId, ref: "ProductVariants", required: true },
     quantity: { type: Number, required: true },
     unitPrice: { type: Number, required: true },
     subtotal: { type: Number, required: true }

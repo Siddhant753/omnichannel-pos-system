@@ -34,6 +34,16 @@ export const getStoresController = async (req: Request, res: Response) => {
     }
 }
 
+export const getStoresCountController = async (req: Request, res: Response) => {
+    try {
+        const totalStores = await StoresModel.countDocuments();
+        return res.status(200).json({ totalStores });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+};
+
 export const updateStoreController = async (req: Request, res: Response) => {
     try {
         const { storeId } = req.params;
